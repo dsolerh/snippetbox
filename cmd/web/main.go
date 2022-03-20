@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
 )
 
 // store configurations for the app
@@ -22,6 +23,12 @@ func main() {
 
 	flag.Parse()
 
+	// info logger
+	infoLog := log.New(os.Stdout, "[INFO]\t", log.Ldate|log.Ltime)
+
+	// error logger
+	errorLog := log.New(os.Stderr, "[ERROR]\t", log.Ldate|log.Ltime|log.Lshortfile)
+
 	mux.HandleFunc("/", home)
 	mux.HandleFunc("/snippet", showSnippet)
 	mux.HandleFunc("/snippet/create", createSnippet)
@@ -31,7 +38,14 @@ func main() {
 	fileServer := http.FileServer(http.Dir(cfg.StaticDir))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 
-	log.Printf("Starting server on %s", cfg.Addr)
-	err := http.ListenAndServe(cfg.Addr, mux)
-	log.Fatal(err)
+	// create a server for custom error logging
+	srv := &http.Server{
+		Addr:     cfg.Addr,
+		ErrorLog: errorLog,
+		Handler:  mux,
+	}
+
+	infoLog.Printf("Starting server on %s", cfg.Addr)
+	err := srv.ListenAndServe()
+	errorLog.Fatal(err)
 }
