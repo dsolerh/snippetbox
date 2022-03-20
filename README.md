@@ -1,3 +1,4 @@
 # snippetbox
 
-this project creates a server written in golang for storing and retrieving snippets, for now is a small project used for learning porpuose but who knows what it will become
+This project creates a server using golang and Mysql for storing and retrieving snippets. It uses a clean architecture with separation of consern between the database logic (mysql), the aplication logic and comunication interface logic (http/https).
+For now is a small project used for learning purpose but who knows what it will become
