@@ -54,7 +54,11 @@ func main() {
 	defer db.Close()
 
 	// db models
-	app.snippet = &mysql.SnippetModel{DB: db}
+	app.snippet, err = mysql.NewSnippetModel(db)
+	if err != nil {
+		app.errorLog.Fatal(err)
+	}
+	defer app.snippet.ClosePrepared()
 
 	// create a server for custom error logging
 	srv := &http.Server{
