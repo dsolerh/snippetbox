@@ -35,10 +35,10 @@ func main() {
 		errorLog: log.New(os.Stderr, "[ERROR]\t", log.Ldate|log.Ltime|log.Lshortfile),
 	}
 
-	mux.HandleFunc("/", home)
-	mux.HandleFunc("/snippet", showSnippet)
-	mux.HandleFunc("/snippet/create", createSnippet)
-	mux.HandleFunc("/file", downloadHandler)
+	mux.HandleFunc("/", app.home)
+	mux.HandleFunc("/snippet", app.showSnippet)
+	mux.HandleFunc("/snippet/create", app.createSnippet)
+	mux.HandleFunc("/file", app.downloadHandler)
 
 	// static files serve
 	fileServer := http.FileServer(http.Dir(cfg.StaticDir))
