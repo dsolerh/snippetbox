@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"os"
 
+	// my package for snippet related functionalities
+	"dsolerh.projects/snippetbox/pkg/models/mysql"
+
 	// mysql driver
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -22,6 +25,7 @@ type application struct {
 	cfg      *config
 	errorLog *log.Logger
 	infoLog  *log.Logger
+	snippet  *mysql.SnippetModel
 }
 
 func main() {
@@ -48,6 +52,9 @@ func main() {
 	}
 	// ensure close is called before exit the program
 	defer db.Close()
+
+	// db models
+	app.snippet = &mysql.SnippetModel{DB: db}
 
 	// create a server for custom error logging
 	srv := &http.Server{
