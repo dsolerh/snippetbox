@@ -8,26 +8,32 @@ import (
 )
 
 // store configurations for the app
-type Config struct {
+type config struct {
 	Addr      string
 	StaticDir string
+}
+
+type application struct {
+	errorLog *log.Logger
+	infoLog  *log.Logger
 }
 
 func main() {
 	mux := http.NewServeMux()
 
 	// configuration
-	cfg := new(Config)
+	cfg := new(config)
 	flag.StringVar(&cfg.Addr, "addr", ":4000", "HTTP network address")
 	flag.StringVar(&cfg.StaticDir, "static-dir", "./ui/static", "Path to static asse")
 
 	flag.Parse()
 
-	// info logger
-	infoLog := log.New(os.Stdout, "[INFO]\t", log.Ldate|log.Ltime)
-
-	// error logger
-	errorLog := log.New(os.Stderr, "[ERROR]\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app := application{
+		// info logger
+		infoLog: log.New(os.Stdout, "[INFO]\t", log.Ldate|log.Ltime),
+		// error logger
+		errorLog: log.New(os.Stderr, "[ERROR]\t", log.Ldate|log.Ltime|log.Lshortfile),
+	}
 
 	mux.HandleFunc("/", home)
 	mux.HandleFunc("/snippet", showSnippet)
@@ -41,11 +47,11 @@ func main() {
 	// create a server for custom error logging
 	srv := &http.Server{
 		Addr:     cfg.Addr,
-		ErrorLog: errorLog,
+		ErrorLog: app.errorLog,
 		Handler:  mux,
 	}
 
-	infoLog.Printf("Starting server on %s", cfg.Addr)
+	app.infoLog.Printf("Starting server on %s", cfg.Addr)
 	err := srv.ListenAndServe()
-	errorLog.Fatal(err)
+	app.errorLog.Fatal(err)
 }
