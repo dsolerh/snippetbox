@@ -44,6 +44,7 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
 	s, err := app.snippet.Get(id)
 	if err == models.ErrNoRecord {
 		app.notFound(w)
+		return
 	} else if err != nil {
 		app.serverError(w, err)
 		return
