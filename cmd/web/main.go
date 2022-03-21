@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -22,39 +23,57 @@ type config struct {
 }
 
 type application struct {
-	cfg      *config
-	errorLog *log.Logger
-	infoLog  *log.Logger
-	snippet  *mysql.SnippetModel
+	cfg           *config
+	errorLog      *log.Logger
+	infoLog       *log.Logger
+	snippet       *mysql.SnippetModel
+	templateCache map[string]*template.Template
 }
 
 func main() {
+	// info logger
+	infoLog := log.New(os.Stdout, "[INFO]\t", log.Ldate|log.Ltime)
+	// error logger
+	errorLog := log.New(os.Stderr, "[ERROR]\t", log.Ldate|log.Ltime|log.Lshortfile)
 	// configuration
-	app := application{
-		// info logger
-		infoLog: log.New(os.Stdout, "[INFO]\t", log.Ldate|log.Ltime),
-		// error logger
-		errorLog: log.New(os.Stderr, "[ERROR]\t", log.Ldate|log.Ltime|log.Lshortfile),
-		cfg:      new(config),
-	}
+	cfg := new(config)
 
 	// get args
-	flag.StringVar(&app.cfg.Addr, "addr", ":4000", "HTTP network address")
-	flag.StringVar(&app.cfg.StaticDir, "static-dir", "./ui/static", "Path to static assets")
-	flag.StringVar(&app.cfg.DSN, "dsn", "web:pass@tcp(localhost:3306)/snippetbox?parseTime=true", "Mysql database driver DSN (Data Source Name)")
+	flag.StringVar(&cfg.Addr, "addr", ":4000", "HTTP network address")
+	flag.StringVar(&cfg.StaticDir, "static-dir", "./ui/static", "Path to static assets")
+	flag.StringVar(&cfg.DSN, "dsn", "web:pass@tcp(localhost:3306)/snippetbox?parseTime=true", "Mysql database driver DSN (Data Source Name)")
 
 	flag.Parse()
 
 	// setup connection to db
-	db, err := openDB(app.cfg.DSN)
+	db, err := openDB(cfg.DSN)
 	if err != nil {
-		app.errorLog.Fatal(err)
+		errorLog.Fatal(err)
 	}
 	// ensure close is called before exit the program
 	defer db.Close()
 
-	// db models
-	app.snippet = &mysql.SnippetModel{DB: db}
+	// templates
+	templateCache, err := newTemplateCache("./ui/html")
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+
+	// start app
+	app := application{
+		// loggers
+		errorLog: errorLog,
+		infoLog:  infoLog,
+
+		// db models
+		snippet: &mysql.SnippetModel{DB: db},
+
+		// templates
+		templateCache: templateCache,
+
+		// config
+		cfg: cfg,
+	}
 
 	// create a server for custom error logging
 	srv := &http.Server{
