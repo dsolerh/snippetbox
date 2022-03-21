@@ -47,3 +47,33 @@ func (m *SnippetModel) Get(id int) (*models.Snippet, error) {
 	}
 	return s, nil
 }
+
+// This will return a specific snippet based on its id.
+func (m *SnippetModel) Latest() ([]*models.Snippet, error) {
+	stmt := `SELECT id, title, content, created, expires FROM snippets
+	WHERE expires > UTC_TIMESTAMP() ORDER BY created DESC LIMIT 10`
+
+	// execute the query
+	rows, err := m.DB.Query(stmt)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	snippets := []*models.Snippet{}
+
+	for rows.Next() {
+		s := &models.Snippet{}
+
+		err = rows.Scan(&s.ID, &s.Title, &s.Content, &s.Expires, &s.Created)
+		if err != nil {
+			return nil, err
+		}
+		snippets = append(snippets, s)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return snippets, nil
+}
