@@ -9,7 +9,7 @@ import (
 	"os"
 
 	// my package for snippet related functionalities
-	"dsolerh.projects/snippetbox/pkg/models/mysql"
+	"dsolerh/snippetbox/pkg/models/mysql"
 
 	// mysql driver
 	_ "github.com/go-sql-driver/mysql"

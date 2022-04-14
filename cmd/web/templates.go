@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"dsolerh.projects/snippetbox/pkg/models"
+	"dsolerh/snippetbox/pkg/models"
 )
 
 type templateData struct {

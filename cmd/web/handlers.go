@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"dsolerh.projects/snippetbox/pkg/models"
+	"dsolerh/snippetbox/pkg/models"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {

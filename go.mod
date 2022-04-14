@@ -1,4 +1,4 @@
-module dsolerh.projects/snippetbox
+module dsolerh/snippetbox
 
 go 1.17
 
