@@ -57,17 +57,20 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if strings.TrimSpace(content) == "" {
-		errors["content"] = "This field cannot ne blank"
+		errors["content"] = "This field cannot be blank"
 	}
 
 	if strings.TrimSpace(expires) == "" {
-		errors["expires"] = "This field cannot ne blank"
+		errors["expires"] = "This field cannot be blank"
 	} else if expires != "365" && expires != "7" && expires != "1" {
 		errors["expires"] = "This field is invalid"
 	}
 
 	if len(errors) != 0 {
-		fmt.Fprint(w, errors)
+		app.render(w, r, "create.page.tmpl", &templateData{
+			FormData:   r.PostForm,
+			FormErrors: errors,
+		})
 		return
 	}
 
