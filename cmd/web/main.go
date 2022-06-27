@@ -77,6 +77,7 @@ func main() {
 
 		// db models
 		snippets: &mysql.SnippetModel{DB: db},
+		users:    &mysql.UserModel{DB: db},
 
 		// templates
 		templateCache: templateCache,
