@@ -7,12 +7,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	// my package for snippet related functionalities
 	"dsolerh/snippetbox/pkg/models/mysql"
 
 	// mysql driver
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/golangcollege/sessions"
 )
 
 // store configurations for the app
@@ -20,12 +22,14 @@ type config struct {
 	Addr      string
 	StaticDir string
 	DSN       string
+	Secret    string
 }
 
 type application struct {
 	cfg           *config
 	errorLog      *log.Logger
 	infoLog       *log.Logger
+	session       *sessions.Session
 	snippet       *mysql.SnippetModel
 	templateCache map[string]*template.Template
 }
@@ -42,6 +46,7 @@ func main() {
 	flag.StringVar(&cfg.Addr, "addr", ":4000", "HTTP network address")
 	flag.StringVar(&cfg.StaticDir, "static-dir", "./ui/static", "Path to static assets")
 	flag.StringVar(&cfg.DSN, "dsn", "web:pass@tcp(localhost:3306)/snippetbox?parseTime=true", "Mysql database driver DSN (Data Source Name)")
+	flag.StringVar(&cfg.Secret, "secret", "s6Ndh+pPbnzHbS*+9Pk8qGWhTzbpa@ge", "Secret")
 
 	flag.Parse()
 
@@ -59,6 +64,9 @@ func main() {
 		errorLog.Fatal(err)
 	}
 
+	session := sessions.New([]byte(cfg.Secret))
+	session.Lifetime = 12 * time.Hour
+
 	// start app
 	app := application{
 		// loggers
@@ -70,6 +78,9 @@ func main() {
 
 		// templates
 		templateCache: templateCache,
+
+		// session
+		session: session,
 
 		// config
 		cfg: cfg,
