@@ -82,3 +82,23 @@ func (app *application) createSnippetForm(w http.ResponseWriter, r *http.Request
 func (app *application) downloadHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./ui/static/file.zip")
 }
+
+func (app *application) signupUserForm(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (app *application) signupUser(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (app *application) loginUserForm(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (app *application) loginUser(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (app *application) logoutUser(w http.ResponseWriter, r *http.Request) {
+
+}
