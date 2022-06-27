@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
-	"unicode/utf8"
 
+	"dsolerh/snippetbox/pkg/forms"
 	"dsolerh/snippetbox/pkg/models"
 )
 
@@ -44,35 +43,21 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 		app.clientError(w, http.StatusBadRequest)
 		return
 	}
-	title := r.PostForm.Get("title")
-	content := r.PostForm.Get("content")
-	expires := r.PostForm.Get("expires")
+	form := forms.New(r.PostForm)
+	form.Required("title", "content", "expires")
+	form.MaxLength("title", 100)
+	form.PermittedValues("expires", "1", "7", "365")
 
-	errors := make(map[string]string)
-
-	if strings.TrimSpace(title) == "" {
-		errors["title"] = "This field cannot be blank"
-	} else if utf8.RuneCountInString(title) > 100 {
-		errors["title"] = "This field is too long (maximun is 100 characters)"
-	}
-
-	if strings.TrimSpace(content) == "" {
-		errors["content"] = "This field cannot be blank"
-	}
-
-	if strings.TrimSpace(expires) == "" {
-		errors["expires"] = "This field cannot be blank"
-	} else if expires != "365" && expires != "7" && expires != "1" {
-		errors["expires"] = "This field is invalid"
-	}
-
-	if len(errors) != 0 {
+	if !form.Valid() {
 		app.render(w, r, "create.page.tmpl", &templateData{
-			FormData:   r.PostForm,
-			FormErrors: errors,
+			Form: form,
 		})
 		return
 	}
+
+	title := r.PostForm.Get("title")
+	content := r.PostForm.Get("content")
+	expires := r.PostForm.Get("expires")
 
 	id, err := app.snippet.Insert(title, content, expires)
 	if err != nil {
@@ -84,7 +69,9 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) createSnippetForm(w http.ResponseWriter, r *http.Request) {
-	app.render(w, r, "create.page.tmpl", nil)
+	app.render(w, r, "create.page.tmpl", &templateData{
+		Form: forms.New(nil),
+	})
 }
 
 func (app *application) downloadHandler(w http.ResponseWriter, r *http.Request) {
