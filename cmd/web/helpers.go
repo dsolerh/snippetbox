@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"dsolerh/snippetbox/pkg/models"
 	"fmt"
 	"net/http"
 	"runtime/debug"
@@ -53,6 +54,11 @@ func (app *application) addDefaultData(td *templateData, r *http.Request) *templ
 	return td
 }
 
-func (app *application) authenticatedUser(r *http.Request) int {
-	return app.session.GetInt(r, "userID")
+func (app *application) authenticatedUser(r *http.Request) *models.User {
+	// return app.session.GetInt(r, "userID")
+	user, ok := r.Context().Value(contextKeyUser).(*models.User)
+	if !ok {
+		return nil
+	}
+	return user
 }
