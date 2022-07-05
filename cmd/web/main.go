@@ -36,6 +36,10 @@ type application struct {
 	templateCache map[string]*template.Template
 }
 
+type contextKey string
+
+var contextKeyUser = contextKey("user")
+
 func main() {
 	// info logger
 	infoLog := log.New(os.Stdout, "[INFO]\t", log.Ldate|log.Ltime)
