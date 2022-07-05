@@ -51,7 +51,7 @@ func TestSecureHeaders(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if string(body) != "OK" {
+	if string(body) != "Ok" {
 		t.Errorf("want body to equal %q", "OK")
 	}
 }

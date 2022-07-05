@@ -10,11 +10,7 @@ import (
 func Test(t *testing.T) {
 	rr := httptest.NewRecorder()
 
-	// httptest.NewRequest()
-	r, err := http.NewRequest("GET", "/", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	r := httptest.NewRequest("GET", "/", nil)
 
 	ping(rr, r)
 	rs := rr.Result()
