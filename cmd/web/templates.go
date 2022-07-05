@@ -10,10 +10,10 @@ import (
 )
 
 type templateData struct {
-	AuthenticatedUser int
 	CurrentYear       int
 	CSRFToken         string
 	Flash             string
+	AuthenticatedUser *models.User
 	Form              *forms.Form
 	Snippet           *models.Snippet
 	Snippets          []*models.Snippet
