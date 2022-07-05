@@ -10,7 +10,7 @@ import (
 func (app *application) routes() http.Handler {
 	// create a middleware chain
 	standardMiddleware := alice.New(app.panicRecover, app.logRequest, secureHeaders)
-	dynamicMiddleware := alice.New(app.session.Enable)
+	dynamicMiddleware := alice.New(app.session.Enable, noSurf)
 
 	mux := pat.New()
 
