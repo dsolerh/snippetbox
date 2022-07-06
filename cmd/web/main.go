@@ -11,6 +11,7 @@ import (
 	"time"
 
 	// my package for snippet related functionalities
+	"dsolerh/snippetbox/pkg/models"
 	"dsolerh/snippetbox/pkg/models/mysql"
 
 	// mysql driver
@@ -31,8 +32,8 @@ type application struct {
 	errorLog      *log.Logger
 	infoLog       *log.Logger
 	session       *sessions.Session
-	snippets      *mysql.SnippetModel
-	users         *mysql.UserModel
+	snippets      models.ISnippetModel
+	users         models.IUserModel
 	templateCache map[string]*template.Template
 }
 
